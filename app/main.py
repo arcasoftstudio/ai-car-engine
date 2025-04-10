@@ -1,4 +1,5 @@
-### File: app/main.py
+# app/main.py
+
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import StreamingResponse
 from app.remover import remove_background
