@@ -4,5 +4,5 @@ python-multipart
 pillow
 torch
 torchvision
-rembg
+rembg>=2.0.55
 onnxruntime
