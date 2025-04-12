@@ -1,20 +1,18 @@
-from rembg import new_session, remove
-from PIL import Image, ImageFilter
+from carvekit.api.high import Interface
+from carvekit.ml.wrap.modnet import IS_MODNET
+from PIL import Image
 import io
+import numpy as np
 
-session = new_session("isnet-general-use")
+# Setup del modello CarveKit con MODNet
+interface = Interface(
+    seg_pipe=IS_MODNET(),
+    pre_pipe=None,
+    post_pipe=None,
+    device="cuda",  # usa la GPU!
+)
 
 def remove_background(image_bytes: bytes):
     input_image = Image.open(io.BytesIO(image_bytes)).convert("RGBA")
-    output_image = remove(input_image, session=session)
-
-    # POST-PROCESSING: miglioramento bordi
-    output_image = smooth_edges(output_image)
-
-    return output_image
-
-def smooth_edges(img):
-    """Applica blur lieve al canale alpha per bordi più morbidi"""
-    r, g, b, a = img.split()
-    a = a.filter(ImageFilter.GaussianBlur(radius=1.5))  # sfuma contorno
-    return Image.merge("RGBA", (r, g, b, a))
+    result = interface([input_image])[0]
+    return result
