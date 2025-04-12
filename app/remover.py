@@ -1,17 +1,14 @@
 from carvekit.api.high import Interface
-from carvekit.ml.init import init_interface
+from carvekit.ml.wrap.modnet import IS_MODNET
 from PIL import Image
 import io
 
-# Inizializza interfaccia MODNet
-interface = init_interface(
-    model_type="modnet",
-    device="cuda",  # usa la tua GPU
-    seg_mask_size=640,
-    refine_mode="full",
-    trimap_prob_threshold=231,
-    trimap_dilation=30,
-    trimap_erosion_iters=5
+# Setup CarveKit con MODNet (alta qualità)
+interface = Interface(
+    seg_pipe=IS_MODNET(),
+    pre_pipe=None,
+    post_pipe=None,
+    device="cuda"  # sfrutta la tua A5000
 )
 
 def remove_background(image_bytes: bytes):
