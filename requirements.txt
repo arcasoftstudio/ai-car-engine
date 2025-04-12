@@ -4,5 +4,9 @@ python-multipart
 pillow
 torch
 torchvision
+
 rembg>=2.0.55
 onnxruntime
+
+carvekit
+opencv-python
