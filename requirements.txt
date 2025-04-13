@@ -6,6 +6,5 @@ torch
 torchvision
 rembg>=2.0.55
 onnxruntime
-carvekit==1.1.0
-
+carvekit==1.0.1
 opencv-python
