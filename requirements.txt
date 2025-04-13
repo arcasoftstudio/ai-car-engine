@@ -7,5 +7,4 @@ torchvision
 rembg>=2.0.55
 onnxruntime
 opencv-python
-git+https://github.com/andrearanica/carvekit@9f46da2#egg=carvekit
-
+carvekit
