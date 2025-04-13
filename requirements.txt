@@ -6,5 +6,5 @@ torch
 torchvision
 rembg>=2.0.55
 onnxruntime
-carvekit==1.0.1
 opencv-python
+git+https://github.com/OPHoperHPO/image-background-remove-tool.git@f11bbd3#egg=carvekit
