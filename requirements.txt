@@ -8,14 +8,4 @@ torchvision
 rembg>=2.0.55
 onnxruntime
 supervision
-transformers
-addict
-yapf
-matplotlib
-scipy
-numpy
-tqdm
-requests
-gitpython
-pyyaml
 pycocotools
