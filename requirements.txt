@@ -18,3 +18,4 @@ tqdm
 requests
 gitpython
 pyyaml
+pycocotools
