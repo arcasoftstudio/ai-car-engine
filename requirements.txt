@@ -9,3 +9,4 @@ onnxruntime
 opencv-python
 carvekit
 supervision
+transformers
