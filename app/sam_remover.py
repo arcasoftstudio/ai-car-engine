@@ -6,9 +6,10 @@ import cv2
 from PIL import Image
 from segment_anything import sam_model_registry, SamPredictor
 from groundingdino.util.inference import load_model, predict
+import torchvision.transforms as T  # IMPORTANTE per la conversione a tensor
 import io
 
-# === FUNZIONE: SCARICA FILE SE MANCANTE ===
+# === FUNZIONE: SCARICA FILE DA HUGGING FACE ===
 def download_from_hf_if_missing(url: str, dest_path: str):
     if not os.path.exists(dest_path):
         print(f"📥 Scarico da Hugging Face: {url}")
@@ -20,9 +21,8 @@ def download_from_hf_if_missing(url: str, dest_path: str):
                 f.write(chunk)
         print(f"✅ Salvato in: {dest_path}")
 
-# === LINK MODELLI DA HUGGING FACE ===
+# === LINK MODELLI SU HUGGING FACE ===
 HF_BASE = "https://huggingface.co/ArcaSoftSrudio/ai-car-business/resolve/main"
-
 SAM_URL = f"{HF_BASE}/sam_vit_h_4b8939.pth"
 DINO_URL = f"{HF_BASE}/groundingdino_swint_ogc.pth"
 DINO_CONFIG_URL = f"{HF_BASE}/GroundingDINO_SwinT_OGC.py"
@@ -32,7 +32,7 @@ SAM_PATH = "models/sam_vit_h_4b8939.pth"
 DINO_PATH = "models/groundingdino_swint_ogc.pth"
 DINO_CONFIG_PATH = "models/GroundingDINO_SwinT_OGC.py"
 
-# === SCARICA FILE SE NON ESISTONO ===
+# === SCARICA SE MANCANTI ===
 download_from_hf_if_missing(SAM_URL, SAM_PATH)
 download_from_hf_if_missing(DINO_URL, DINO_PATH)
 download_from_hf_if_missing(DINO_CONFIG_URL, DINO_CONFIG_PATH)
@@ -47,18 +47,21 @@ def load_dino():
     model = load_model(DINO_CONFIG_PATH, DINO_PATH)
     return model
 
-# === FUNZIONE PRINCIPALE ===
+# === FUNZIONE PRINCIPALE: RIMOZIONE SFONDO CON SAM + DINO ===
 def remove_background_sam(image_bytes: bytes):
     input_image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     image_np = np.array(input_image)
     image_bgr = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
+
+    # Converti immagine in tensor per Grounding DINO
+    image_tensor = T.ToTensor()(image_bgr).unsqueeze(0).to("cuda")
 
     dino = load_dino()
     sam = load_sam()
 
     boxes, logits, phrases = predict(
         model=dino,
-        image=image_bgr,
+        image=image_tensor,
         caption="a car",
         box_threshold=0.3,
         text_threshold=0.25
