@@ -8,3 +8,4 @@ rembg>=2.0.55
 onnxruntime
 opencv-python
 carvekit
+supervision
