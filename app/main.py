@@ -31,13 +31,21 @@ async def remove_bg_sam(file: UploadFile = File(...)):
 
 @app.get("/health")
 def health_check():
+    try:
+        from groundingdino.layers import _C
+        dino_ok = True
+    except Exception as e:
+        print("❌ GroundingDINO _C not loaded:", e)
+        dino_ok = False
+
     return {
         "cuda": torch.cuda.is_available(),
         "cuda_device": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
-        "groundingdino_compiled": bool(glob.glob("groundingdino/layers/_C*.so")),
+        "groundingdino_compiled": dino_ok,
         "models": {
             "sam": os.path.exists("models/sam_vit_h_4b8939.pth"),
             "dino": os.path.exists("models/groundingdino_swint_ogc.pth"),
             "dino_config": os.path.exists("models/GroundingDINO_SwinT_OGC.py")
         }
     }
+
