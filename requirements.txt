@@ -6,6 +6,6 @@ opencv-python
 torch
 torchvision
 rembg>=2.0.55
-onnxruntime
+onnxruntime-gpu==1.15.1
 supervision
 pycocotools
