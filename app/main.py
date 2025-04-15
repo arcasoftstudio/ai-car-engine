@@ -27,3 +27,10 @@ async def remove_bg_sam(file: UploadFile = File(...)):
     result_image.save(img_io, format="PNG")
     img_io.seek(0)
     return StreamingResponse(img_io, media_type="image/png")
+
+
+@app.get("/health")
+def health_check():
+    cuda = torch.cuda.is_available()
+    dino = os.path.exists("groundingdino/layers/_C.cpython-*.so")
+    return {"cuda": cuda, "dino_compiled": dino}
