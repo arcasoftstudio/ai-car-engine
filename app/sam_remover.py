@@ -81,4 +81,5 @@ def remove_background_sam(image_bytes: bytes):
 
         mask = masks[0][0].cpu().numpy().astype(np.uint8) * 255
         result_rgba = np.dstack((image_np, mask))
-        return Image.fromarray
+        return Image.fromarray(result_rgba)
+
