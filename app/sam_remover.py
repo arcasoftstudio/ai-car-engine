@@ -83,3 +83,7 @@ def remove_background_sam(image_bytes: bytes):
         result_rgba = np.dstack((image_np, mask))
         return Image.fromarray(result_rgba)
 
+    except Exception as e:
+        print("❌ Errore durante la segmentazione SAM + DINO:", e)
+        raise RuntimeError("Errore interno AI. Segmentazione fallita.")
+
