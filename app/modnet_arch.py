@@ -29,4 +29,32 @@ class MODNet(nn.Module):
             nn.BatchNorm2d(32),
             nn.ReLU(inplace=True),
 
-            nn.Conv2d(32,
+            nn.Conv2d(32, 64, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(inplace=True),
+
+            nn.Conv2d(64, 128, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(inplace=True)
+        )
+
+        self.decoder = nn.Sequential(
+            nn.Conv2d(128, 64, kernel_size=3, padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(inplace=True),
+
+            nn.Conv2d(64, 32, kernel_size=3, padding=1),
+            nn.BatchNorm2d(32),
+            nn.ReLU(inplace=True),
+
+            nn.Conv2d(32, 1, kernel_size=1)
+        )
+
+        self.se = SEModule(128)
+
+    def forward(self, x):
+        x = self.downsample(x)
+        x = self.se(x)
+        x = self.decoder(x)
+        x = torch.sigmoid(x)
+        return x
