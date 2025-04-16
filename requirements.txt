@@ -5,13 +5,5 @@ pillow
 opencv-python
 torch==2.1.2
 torchvision==0.16.2
-rembg>=2.0.55
-onnxruntime-gpu==1.15.1
-supervision
-pycocotools
-huggingface-hub
-segment-anything @ git+https://github.com/facebookresearch/segment-anything.git
-diffusers
-transformers
-accelerate
-groundingdino @ git+https://github.com/IDEA-Research/GroundingDINO.git
+numpy
+requests
