@@ -14,3 +14,4 @@ segment-anything @ git+https://github.com/facebookresearch/segment-anything.git
 diffusers
 transformers
 accelerate
+groundingdino @ git+https://github.com/IDEA-Research/GroundingDINO.git
