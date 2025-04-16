@@ -1,11 +1,33 @@
 # app/main.py
 
+import os
+import zipfile
+from huggingface_hub import hf_hub_download
+
+# Step 1 – Estrai GroundingDINO se non c'è
+extract_path = "third_party/GroundingDINO"
+if not os.path.exists(extract_path):
+    print("📦 Scarico e estraggo GroundingDINO...")
+    zip_path = hf_hub_download(
+        repo_id="ArcaSoftSrudio/ai-car-business",
+        filename="groundingdinoCode.zip"
+    )
+    with zipfile.ZipFile(zip_path, "r") as zip_ref:
+        zip_ref.extractall("third_party/")
+    print("✅ Estrazione completata.")
+else:
+    print("✅ GroundingDINO già presente.")
+
+# Aggiungi path ai moduli
+import sys
+sys.path.append("third_party/GroundingDINO")
+
+# --- resto del codice esistente ---
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import StreamingResponse
 from app.remover import remove_background
 from app.sam_remover import remove_background_sam
 import io
-import os
 import torch
 import glob
 
@@ -48,4 +70,3 @@ def health_check():
             "dino_config": os.path.exists("models/GroundingDINO_SwinT_OGC.py")
         }
     }
-
