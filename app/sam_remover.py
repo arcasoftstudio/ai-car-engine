@@ -1,4 +1,7 @@
 import os
+import sys
+sys.path.append("third_party/GroundingDINO")  # <- AGGIUNTA IMPORTANTE
+
 import requests
 import torch
 import numpy as np
@@ -7,6 +10,7 @@ from PIL import Image
 from segment_anything import sam_model_registry, SamPredictor
 from groundingdino.util.inference import load_model, predict, load_image
 import io
+
 
 def download_from_hf_if_missing(url: str, dest_path: str):
     if not os.path.exists(dest_path):
