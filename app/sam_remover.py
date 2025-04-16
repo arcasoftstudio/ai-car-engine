@@ -19,18 +19,19 @@ def download_from_hf_if_missing(url: str, dest_path: str):
                 f.write(chunk)
         print(f"✅ Salvato in: {dest_path}")
 
+# Link diretti ai pesi
 HF_BASE = "https://huggingface.co/ArcaSoftSrudio/ai-car-business/resolve/main"
 SAM_URL = f"{HF_BASE}/sam_vit_h_4b8939.pth"
 DINO_URL = f"{HF_BASE}/groundingdino_swint_ogc.pth"
-DINO_CONFIG_URL = f"{HF_BASE}/GroundingDINO_SwinT_OGC.py"
 
+# Percorsi locali dei modelli
 SAM_PATH = "models/sam_vit_h_4b8939.pth"
 DINO_PATH = "models/groundingdino_swint_ogc.pth"
-DINO_CONFIG_PATH = "models/GroundingDINO_SwinT_OGC.py"
+DINO_CONFIG_PATH = "third_party/GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py"
 
+# Scarica i modelli se mancano
 download_from_hf_if_missing(SAM_URL, SAM_PATH)
 download_from_hf_if_missing(DINO_URL, DINO_PATH)
-download_from_hf_if_missing(DINO_CONFIG_URL, DINO_CONFIG_PATH)
 
 def load_sam():
     sam = sam_model_registry["vit_h"](checkpoint=SAM_PATH).to("cuda")
@@ -86,4 +87,3 @@ def remove_background_sam(image_bytes: bytes):
     except Exception as e:
         print("❌ Errore durante la segmentazione SAM + DINO:", e)
         raise RuntimeError("Errore interno AI. Segmentazione fallita.")
-
