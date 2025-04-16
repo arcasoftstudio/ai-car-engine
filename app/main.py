@@ -1,7 +1,5 @@
-# app/main.py
-
 from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, JSONResponse
 import io
 import torch
 import os
@@ -13,12 +11,19 @@ app = FastAPI()
 
 @app.post("/remove-background-modnet")
 async def remove_bg_modnet(file: UploadFile = File(...)):
-    image_bytes = await file.read()
-    result_image = remove_background_modnet(image_bytes)
-    img_io = io.BytesIO()
-    result_image.save(img_io, format="PNG")
-    img_io.seek(0)
-    return StreamingResponse(img_io, media_type="image/png")
+    try:
+        image_bytes = await file.read()
+        result_image = remove_background_modnet(image_bytes)
+        img_io = io.BytesIO()
+        result_image.save(img_io, format="PNG")
+        img_io.seek(0)
+        return StreamingResponse(img_io, media_type="image/png")
+    except Exception as e:
+        print("❌ ERRORE MODNET:", str(e))
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Errore durante la rimozione dello sfondo: {str(e)}"},
+        )
 
 
 @app.get("/health")
