@@ -11,7 +11,7 @@ from torch.nn.functional import interpolate
 
 from app.modnet_arch import MODNet  # te lo passo nel prossimo step
 
-HF_URL = "https://huggingface.co/ArcaSoftSrudio/ai-car-business/resolve/main/modnet_photographic.pth"
+HF_URL = HF_URL = "https://huggingface.co/ArcaSoftSrudio/ai-car-business/resolve/main/modnet_photographic.pth"
 MODEL_PATH = "models/modnet_photographic.pth"
 
 def download_model():
