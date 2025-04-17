@@ -8,4 +8,10 @@ torchvision==0.16.2
 numpy
 requests
 gdown
+
+# SAM (Segment Anything)
 segment-anything @ git+https://github.com/facebookresearch/segment-anything.git
+
+# rembg + ISNet (rimozione sfondo professionale)
+rembg==2.0.55
+onnxruntime-gpu==1.15.1
