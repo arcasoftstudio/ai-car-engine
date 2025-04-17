@@ -37,4 +37,29 @@ def remove_background(image_bytes: bytes):
     input_image = enhance_contrast_for_dark_areas(input_image)
     output_image = remove(input_image, session=session)
     output_image = darken_glass_areas(output_image)
+
+    # Aggiungi riflesso sotto
+    output_image = add_reflection(output_image)
+
     return output_image
+
+
+
+def add_reflection(image: Image.Image) -> Image.Image:
+    # Ribalta verticalmente l'immagine per ottenere il riflesso
+    flipped = image.transpose(Image.FLIP_TOP_BOTTOM)
+
+    # Prende solo una parte del riflesso (es. 25% altezza)
+    reflection = flipped.crop((0, 0, image.width, int(image.height * 0.25)))
+    reflection = reflection.convert("RGBA")
+
+    # Abbassa luminosità per simulare riflesso naturale
+    reflection = ImageEnhance.Brightness(reflection).enhance(0.3)
+
+    # Crea canvas con spazio sotto
+    final = Image.new("RGBA", (image.width, image.height + reflection.height), (0, 0, 0, 0))
+    final.paste(image, (0, 0))
+    final.paste(reflection, (0, image.height), reflection)
+
+    return final
+
