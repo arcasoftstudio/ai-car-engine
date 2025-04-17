@@ -9,7 +9,7 @@ from torchvision import transforms
 from torch.nn.functional import interpolate
 from app.modnet_arch import MODNet
 
-HF_URL = "https://huggingface.co/ArcaSoftSrudio/ai-car-business/resolve/main/modnet_photographic_portrait_matting.ckpt"
+HF_URL = "https://github.com/ZHKKKe/MODNet/releases/download/v1/modnet_photographic_portrait_matting.ckpt"
 MODEL_PATH = "models/modnet_photographic_portrait_matting.ckpt"
 
 def download_model():
