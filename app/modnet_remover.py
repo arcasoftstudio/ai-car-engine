@@ -9,27 +9,44 @@ from torchvision import transforms
 from torch.nn.functional import interpolate
 from app.modnet_arch import MODNet
 
-HF_URL = "https://github.com/ZHKKKe/MODNet/releases/download/v1/modnet_photographic_portrait_matting.ckpt"
+
+
+HF_URL = "https://huggingface.co/ArcaSoftStudio/ai-car-business/resolve/main/modnet_photographic_portrait_matting.ckpt"
 MODEL_PATH = "models/modnet_photographic_portrait_matting.ckpt"
 
 def download_model():
     if not os.path.exists(MODEL_PATH):
         print("📥 Scarico modello MODNET da Hugging Face...")
         os.makedirs("models", exist_ok=True)
-        r = requests.get(HF_URL, stream=True)
-        with open(MODEL_PATH, "wb") as f:
-            for chunk in r.iter_content(chunk_size=8192):
-                f.write(chunk)
-        print("✅ Modello scaricato.")
 
-download_model()
+        response = requests.get(HF_URL, stream=True)
+        
+        # Verifica codice HTTP
+        if response.status_code != 200:
+            raise Exception(f"❌ ERRORE durante il download: codice HTTP {response.status_code}")
+
+        # Verifica che non sia HTML (errore silenzioso di Hugging Face)
+        first_chunk = next(response.iter_content(1024))
+        if first_chunk.strip().startswith(b'<!DOCTYPE html') or b'<html' in first_chunk:
+            raise Exception("❌ ERRORE: il file scaricato non è un .ckpt ma una pagina HTML")
+
+        # Scrivi il file (includendo il primo chunk già letto)
+        with open(MODEL_PATH, "wb") as f:
+            f.write(first_chunk)
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+
+        print("✅ Modello scaricato correttamente.")
+
 
 def load_modnet():
+    download_model()
     model = MODNet()
     state_dict = torch.load(MODEL_PATH, map_location='cpu')
     model.load_state_dict(state_dict)
     model.eval()
     return model
+
 
 
 def remove_background_modnet(image_bytes: bytes):
