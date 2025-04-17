@@ -1,10 +1,7 @@
-# Dockerfile
-
 FROM python:3.10-slim
 
-# 🔧 Installa librerie di sistema richieste da OpenCV, PyTorch ecc.
+# 🔧 Installa librerie di sistema minime necessarie per rembg + Pillow
 RUN apt-get update && apt-get install -y \
-    git \
     libgl1 \
     libglib2.0-0 \
     && apt-get clean \
@@ -13,19 +10,12 @@ RUN apt-get update && apt-get install -y \
 # 📁 Directory di lavoro
 WORKDIR /app
 
-# 📦 Copia requirements e installa torch con supporto CUDA (essenziale)
+# 📦 Copia requirements e installa pacchetti
 COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# ✅ Installazione di torch e torchvision con CUDA 11.8 (perfetto per A6000/A100)
-RUN pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cu118
-
-# 🔌 Installa dipendenze AI e i tuoi requirements
-RUN pip install --no-cache-dir opencv-python supervision && \
-    pip install --no-cache-dir git+https://github.com/IDEA-Research/GroundingDINO.git && \
-    pip install --no-cache-dir -r requirements.txt
-
-# 🧠 Copia tutto il resto del codice
+# 📂 Copia il codice
 COPY . .
 
-# 🚀 Avvio dell'app
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# 🚀 Avvio FastAPI
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
