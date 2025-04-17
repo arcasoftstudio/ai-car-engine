@@ -57,7 +57,8 @@ def remove_background_modnet(image_bytes: bytes):
 
     with torch.no_grad():
         matte = modnet(im_tensor)
-        matte = interpolate(matte.unsqueeze(0), size=(h, w), mode='bilinear').squeeze().numpy()
+        matte = interpolate(matte.unsqueeze(0).unsqueeze(0), size=(h, w), mode='bilinear').squeeze().numpy()
+
 
     fg = im.astype(np.float32) / 255
     alpha = np.expand_dims(matte, axis=2)
