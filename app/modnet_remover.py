@@ -32,14 +32,12 @@ def download_model():
 
 def load_modnet():
     download_model()
-    print(f"📂 Controllo se il file esiste: {os.path.exists(MODEL_PATH)}")
-    print(f"📦 Dimensione file: {os.path.getsize(MODEL_PATH)} bytes" if os.path.exists(MODEL_PATH) else "⛔ File non trovato!")
-    
     model = MODNet()
     state_dict = torch.load(MODEL_PATH, map_location='cpu')
     model.load_state_dict(state_dict)
     model.eval()
     return model
+
 
 
 
