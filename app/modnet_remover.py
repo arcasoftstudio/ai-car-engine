@@ -19,28 +19,34 @@ def download_model():
         print("📥 Scarico modello MODNET da Hugging Face...")
         os.makedirs("models", exist_ok=True)
 
+        print(f"🌐 Download da: {HF_URL}")
         response = requests.get(HF_URL, stream=True)
-        
-        # Verifica codice HTTP
-        if response.status_code != 200:
-            raise Exception(f"❌ ERRORE durante il download: codice HTTP {response.status_code}")
 
-        # Verifica che non sia HTML (errore silenzioso di Hugging Face)
+        if response.status_code != 200:
+            raise Exception(f"❌ ERRORE HTTP: {response.status_code}")
+
         first_chunk = next(response.iter_content(1024))
         if first_chunk.strip().startswith(b'<!DOCTYPE html') or b'<html' in first_chunk:
-            raise Exception("❌ ERRORE: il file scaricato non è un .ckpt ma una pagina HTML")
+            raise Exception("❌ ERRORE: il file scaricato è HTML, non un .ckpt valido!")
 
-        # Scrivi il file (includendo il primo chunk già letto)
+        print("💾 Scrittura file su disco...")
         with open(MODEL_PATH, "wb") as f:
             f.write(first_chunk)
+            total = len(first_chunk)
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
+                total += len(chunk)
 
-        print("✅ Modello scaricato correttamente.")
+        print(f"✅ Modello scaricato correttamente ({round(total / 1024 / 1024, 2)} MB)")
+    else:
+        print("✔️ Il modello esiste già.")
 
 
 def load_modnet():
     download_model()
+    print(f"📂 Controllo se il file esiste: {os.path.exists(MODEL_PATH)}")
+    print(f"📦 Dimensione file: {os.path.getsize(MODEL_PATH)} bytes" if os.path.exists(MODEL_PATH) else "⛔ File non trovato!")
+    
     model = MODNet()
     state_dict = torch.load(MODEL_PATH, map_location='cpu')
     model.load_state_dict(state_dict)
