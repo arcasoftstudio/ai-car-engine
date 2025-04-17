@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .backbones import SUPPORTED_BACKBONES
+from app.backbones import SUPPORTED_BACKBONES
 
 
 #------------------------------------------------------------------------------
