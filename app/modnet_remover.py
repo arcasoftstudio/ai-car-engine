@@ -32,11 +32,21 @@ def download_model():
 
 def load_modnet():
     download_model()
-    model = MODNet()
+
+    # Carica il file .ckpt
     state_dict = torch.load(MODEL_PATH, map_location='cpu')
-    model.load_state_dict(state_dict)
-    model.eval()
-    return model
+
+    # 🔍 STAMPA LE CHIAVI DEL FILE
+    print("📦 PRIME 20 CHIAVI NEL CHECKPOINT:")
+    for i, key in enumerate(state_dict.keys()):
+        print(f"{i+1:02d}. {key}")
+        if i >= 19:
+            break
+
+    # ⛔️ FERMA IL CARICAMENTO TEMPORANEAMENTE
+    print("🛑 STOP: questa è solo una stampa, non viene ancora caricato il modello.")
+    exit()  # <-- Serve per bloccare qui dopo la stampa
+
 
 
 
