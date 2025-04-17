@@ -204,7 +204,9 @@ class FusionBranch(nn.Module):
 class MODNet(nn.Module):
     def __init__(self, in_channels=3, hr_channels=32, backbone_arch='mobilenetv2'):
         super(MODNet, self).__init__()
-        self.backbone = SUPPORTED_BACKBONES[backbone_arch](in_channels)
+        self.backbone = nn.Module()
+self.backbone.model = SUPPORTED_BACKBONES[backbone_arch](in_channels)
+
 
         self.lr_branch = LRBranch(self.backbone)
         self.hr_branch = HRBranch(hr_channels, self.backbone.enc_channels)
