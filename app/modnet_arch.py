@@ -200,17 +200,17 @@ class FusionBranch(nn.Module):
 #------------------------------------------------------------------------------
 #  MODNet
 #------------------------------------------------------------------------------
-
 class MODNet(nn.Module):
     def __init__(self, in_channels=3, hr_channels=32, backbone_arch='mobilenetv2'):
         super(MODNet, self).__init__()
+
+        # ✅ Fix per supportare modelli salvati come module.backbone.model...
         self.backbone = nn.Module()
-self.backbone.model = SUPPORTED_BACKBONES[backbone_arch](in_channels)
+        self.backbone.model = SUPPORTED_BACKBONES[backbone_arch](in_channels)
 
-
-        self.lr_branch = LRBranch(self.backbone)
-        self.hr_branch = HRBranch(hr_channels, self.backbone.enc_channels)
-        self.f_branch = FusionBranch(hr_channels, self.backbone.enc_channels)
+        self.lr_branch = LRBranch(self.backbone.model)
+        self.hr_branch = HRBranch(hr_channels, self.backbone.model.enc_channels)
+        self.f_branch = FusionBranch(hr_channels, self.backbone.model.enc_channels)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
