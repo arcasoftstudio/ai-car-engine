@@ -202,22 +202,13 @@ class FusionBranch(nn.Module):
 #------------------------------------------------------------------------------
 
 class MODNet(nn.Module):
-    """ Architecture of MODNet
-    """
-
-    def __init__(self, in_channels=3, hr_channels=32, backbone_arch='mobilenetv2', backbone_pretrained=True):
+    def __init__(self, in_channels=3, hr_channels=32, backbone_arch='mobilenetv2'):
         super(MODNet, self).__init__()
-
-        self.in_channels = in_channels
-        self.hr_channels = hr_channels
-        self.backbone_arch = backbone_arch
-        self.backbone_pretrained = backbone_pretrained
-
-        self.backbone = SUPPORTED_BACKBONES[self.backbone_arch](self.in_channels)
+        self.backbone = SUPPORTED_BACKBONES[backbone_arch](in_channels)
 
         self.lr_branch = LRBranch(self.backbone)
-        self.hr_branch = HRBranch(self.hr_channels, self.backbone.enc_channels)
-        self.f_branch = FusionBranch(self.hr_channels, self.backbone.enc_channels)
+        self.hr_branch = HRBranch(hr_channels, self.backbone.enc_channels)
+        self.f_branch = FusionBranch(hr_channels, self.backbone.enc_channels)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -225,16 +216,12 @@ class MODNet(nn.Module):
             elif isinstance(m, nn.BatchNorm2d) or isinstance(m, nn.InstanceNorm2d):
                 self._init_norm(m)
 
-        if self.backbone_pretrained:
-            self.backbone.load_pretrained_ckpt()                
-
-    def forward(self, img, inference):
-        pred_semantic, lr8x, [enc2x, enc4x] = self.lr_branch(img, inference)
-        pred_detail, hr2x = self.hr_branch(img, enc2x, enc4x, lr8x, inference)
+    def forward(self, img):
+        _, lr8x, [enc2x, enc4x] = self.lr_branch(img, inference=False)
+        _, hr2x = self.hr_branch(img, enc2x, enc4x, lr8x, inference=False)
         pred_matte = self.f_branch(img, lr8x, hr2x)
+        return pred_matte
 
-        return pred_semantic, pred_detail, pred_matte
-    
     def freeze_norm(self):
         norm_types = [nn.BatchNorm2d, nn.InstanceNorm2d]
         for m in self.modules():
