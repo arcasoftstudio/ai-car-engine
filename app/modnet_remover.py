@@ -1,4 +1,5 @@
 import os
+import gdown
 import requests
 import torch
 import numpy as np
@@ -10,8 +11,7 @@ from torch.nn.functional import interpolate
 from app.modnet_arch import MODNet
 
 
-
-HF_URL = "https://huggingface.co/ArcaSoftStudio/ai-car-business/resolve/main/modnet_photographic_portrait_matting.ckpt"
+GDRIVE_ID = "1mcr7ALciuAsHCpLnrtG_eop5-EYhbCmz"
 MODEL_PATH = "models/modnet_photographic_portrait_matting.ckpt"
 
 def download_model():
@@ -19,25 +19,14 @@ def download_model():
         print("✔️ Il modello esiste già.")
         return
 
-    print("📥 Scarico modello MODNET da Hugging Face...")
+    print("📥 Scarico modello da Google Drive...")
     os.makedirs("models", exist_ok=True)
 
-    with requests.get(HF_URL, stream=True, allow_redirects=True) as response:
-        content_type = response.headers.get("Content-Type", "")
-        print("📄 Content-Type:", content_type)
+    url = f"https://drive.google.com/uc?id={GDRIVE_ID}"
+    gdown.download(url, MODEL_PATH, quiet=False)
 
-        if response.status_code != 200:
-            raise Exception(f"❌ ERRORE HTTP {response.status_code}: {response.text}")
+    print(f"✅ Modello scaricato: {round(os.path.getsize(MODEL_PATH)/1024/1024, 2)} MB")
 
-        if "text/html" in content_type or "<html" in response.text[:100].lower():
-            raise Exception("❌ Il file scaricato è HTML, probabilmente il link è errato o il repo è privato.")
-
-        with open(MODEL_PATH, "wb") as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                if chunk:
-                    f.write(chunk)
-
-    print(f"✅ Modello scaricato correttamente! ({round(os.path.getsize(MODEL_PATH)/1024/1024, 2)} MB)")
 
 
 
