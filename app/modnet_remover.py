@@ -15,31 +15,30 @@ HF_URL = "https://huggingface.co/ArcaSoftStudio/ai-car-business/resolve/main/mod
 MODEL_PATH = "models/modnet_photographic_portrait_matting.ckpt"
 
 def download_model():
-    if not os.path.exists(MODEL_PATH):
-        print("📥 Scarico modello MODNET da Hugging Face...")
-        os.makedirs("models", exist_ok=True)
+    if os.path.exists(MODEL_PATH) and os.path.getsize(MODEL_PATH) > 1024 * 1024:
+        print("✔️ Il modello esiste già.")
+        return
 
-        print(f"🌐 Download da: {HF_URL}")
-        response = requests.get(HF_URL, stream=True)
+    print("📥 Scarico modello MODNET da Hugging Face...")
+    os.makedirs("models", exist_ok=True)
+
+    with requests.get(HF_URL, stream=True, allow_redirects=True) as response:
+        content_type = response.headers.get("Content-Type", "")
+        print("📄 Content-Type:", content_type)
 
         if response.status_code != 200:
-            raise Exception(f"❌ ERRORE HTTP: {response.status_code}")
+            raise Exception(f"❌ ERRORE HTTP {response.status_code}: {response.text}")
 
-        first_chunk = next(response.iter_content(1024))
-        if first_chunk.strip().startswith(b'<!DOCTYPE html') or b'<html' in first_chunk:
-            raise Exception("❌ ERRORE: il file scaricato è HTML, non un .ckpt valido!")
+        if "text/html" in content_type or "<html" in response.text[:100].lower():
+            raise Exception("❌ Il file scaricato è HTML, probabilmente il link è errato o il repo è privato.")
 
-        print("💾 Scrittura file su disco...")
         with open(MODEL_PATH, "wb") as f:
-            f.write(first_chunk)
-            total = len(first_chunk)
             for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
-                total += len(chunk)
+                if chunk:
+                    f.write(chunk)
 
-        print(f"✅ Modello scaricato correttamente ({round(total / 1024 / 1024, 2)} MB)")
-    else:
-        print("✔️ Il modello esiste già.")
+    print(f"✅ Modello scaricato correttamente! ({round(os.path.getsize(MODEL_PATH)/1024/1024, 2)} MB)")
+
 
 
 def load_modnet():
