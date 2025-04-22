@@ -2,6 +2,7 @@
 set -e
 
 export DEBIAN_FRONTEND=noninteractive
+echo "✅ STO USANDO LA VERSIONE CORRETTA DELLO START.SH"
 
 echo "🧱 Aggiorno pacchetti e installo dipendenze di sistema..."
 apt update && apt install -y python3-pip git libgl1 libglib2.0-0 build-essential wget unzip curl
