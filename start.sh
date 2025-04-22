@@ -17,6 +17,7 @@ tar -xzf Meshroom-2021.1.0-linux-cuda10.tar.gz
 mv Meshroom-2021.1.0 /opt/meshroom
 ln -s /opt/meshroom/meshroom_photogrammetry /usr/local/bin/meshroom_photogrammetry
 
+
 echo "🚀 Avvio FastAPI sulla porta 8000..."
 cd /workspace/ai-car-3d-backend
 uvicorn app.main:app --host 0.0.0.0 --port 8000
