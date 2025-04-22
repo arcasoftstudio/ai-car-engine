@@ -4,11 +4,19 @@ set -e
 export DEBIAN_FRONTEND=noninteractive
 
 echo "🧱 Aggiorno pacchetti e installo dipendenze di sistema..."
-apt update && apt install -y libgl1 git build-essential
+apt update && apt install -y python3-pip git libgl1 libglib2.0-0 build-essential wget unzip curl
 
-echo "🐍 Installo dipendenze Python..."
-pip install --upgrade pip
-pip install -r requirements.txt
+echo "🐍 Upgrade pip e installo dipendenze Python..."
+pip3 install --upgrade pip
+pip3 install -r /workspace/ai-car-3d-backend/requirements.txt
+
+echo "📦 Scarico e installo Meshroom..."
+cd /workspace
+wget https://huggingface.co/ArcaSoftSrudio/ai-car-business/resolve/main/Meshroom-2021.1.0-linux-cuda10.tar.gz
+tar -xzf Meshroom-2021.1.0-linux-cuda10.tar.gz
+mv Meshroom-2021.1.0 /opt/meshroom
+ln -s /opt/meshroom/meshroom_photogrammetry /usr/local/bin/meshroom_photogrammetry
 
 echo "🚀 Avvio FastAPI sulla porta 8000..."
+cd /workspace/ai-car-3d-backend
 uvicorn app.main:app --host 0.0.0.0 --port 8000
